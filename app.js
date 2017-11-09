@@ -6,7 +6,7 @@ const express = require('express'),
     Campground = require("./models/campground"),
     Comment = require("./models/comment");
 
-seedDB();
+// seedDB();
 
 mongoose.Promise = global.Promise;
 mongoose.connect("mongodb://localhost/yelp_camp", {
@@ -20,6 +20,7 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+app.use(express.static(__dirname + "/public"));
 
 app.get("/", function (req, res) {
     res.render('landing');

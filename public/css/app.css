@@ -1,0 +1,21 @@
+.thumbnail img {
+    width:100%
+}
+
+.thumbnail {
+    padding: 0;
+}
+
+#comment-section .caption-full {
+    margin: 9px;
+}
+
+body {
+    /*background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%) !important;
+    background-image: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%) !important;*/
+    
+    /*background: #43cea2  !important;
+    background: -webkit-linear-gradient(to left, #185a9d, #43cea2)  !important;
+    background: linear-gradient(to left, #185a9d, #43cea2)  !important;*/
+
+}
