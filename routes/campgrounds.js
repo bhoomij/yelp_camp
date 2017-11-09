@@ -9,7 +9,7 @@ router.get("/", function (req, res) {
         if (err) {
             console.log(err)
         } else {
-            res.render('campgrounds/index', {
+            res.render('campgrounds', {
                 campgrounds
             });
         }
@@ -17,21 +17,26 @@ router.get("/", function (req, res) {
 
 });
 
+// NEW: Get form to add new campground
+router.get("/new", isLoggedIn, function (req, res) {
+    res.render("campgrounds/new");
+});
+
 // CREATE: Add new campground
-router.post("/", function (req, res) {
-    Campground.create(req.body, function (err) {
+router.post("/", isLoggedIn, function (req, res) {
+    let newCampground = req.body.campgroud;
+    newCampground.author = {
+        id: req.user.id,
+        username: req.user.username
+    };
+    Campground.create(newCampground, function (err) {
         if (err) {
             console.log("ERROR: ", err);
         } else {
-            res.redirect("/index");
+            res.redirect("/campgrounds");
         }
     });
 
-});
-
-// NEW: Get form to add new campground
-router.get("/new", function (req, res) {
-    res.render("campgrounds/new");
 });
 
 // SHOW: Get campground by id
@@ -47,5 +52,13 @@ router.get("/:id", function (req, res) {
         }
     })
 });
+
+// middleware
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect("/login");
+}
 
 module.exports = router;
