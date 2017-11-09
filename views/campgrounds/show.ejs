@@ -27,6 +27,12 @@
                                 <%= campground.author.username %>
                             </em>
                         </p>
+                        <% if(loggedInUser && campground.author.id.equals(loggedInUser.id)) { %>
+                            <a class="btn btn-warning" href="/campgrounds/<%= campground.id %>/edit">Edit</a>
+                            <form id="delete-camp-form" action="/campgrounds/<%= campground.id %>?_method=DELETE" method="POST">
+                                <button class="btn btn-danger">Delete</button>
+                            </form>
+                            <% } %>
                     </div>
                 </div>
                 <div class="well">

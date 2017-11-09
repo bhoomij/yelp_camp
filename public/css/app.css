@@ -19,3 +19,7 @@ body {
     background: linear-gradient(to left, #185a9d, #43cea2)  !important;*/
 
 }
+
+#delete-camp-form {
+    display: inline;
+}
