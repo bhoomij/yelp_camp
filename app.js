@@ -1,32 +1,18 @@
 const express = require('express'),
     app = express(),
     bodyParser = require('body-parser'),
-    mongoose = require('mongoose');
+    mongoose = require('mongoose'),
+    seedDB = require("./seeder/seed"),
+    Campground = require("./models/campground"),
+    Comment = require("./models/comment");
+
+seedDB();
 
 mongoose.Promise = global.Promise;
 mongoose.connect("mongodb://localhost/yelp_camp", {
     useMongoClient: true
 });
 
-const CampgroundSchema = new mongoose.Schema({
-    name: String,
-    image: String,
-    description: String,
-});
-
-const Campground = mongoose.model("Campground", CampgroundSchema);
-
-Campground.create({
-    name: "Nile The River",
-    image: "https://jungeunforschung.files.wordpress.com/2015/02/brahmaputra.jpg",
-    description: "Amazing place. Loved by most of the nature lovers.",
-}, function (err, campground) {
-    if (err) {
-        console.log("ERROR: ", err);
-    } else {
-        console.log(campground);
-    }
-});
 
 const port = process.env.PORT | 3000;
 
@@ -46,7 +32,7 @@ app.get("/campgrounds", function (req, res) {
             console.log(err)
         } else {
             console.log(campgrounds);
-            res.render('index', {
+            res.render('campgrounds/index', {
                 campgrounds
             });
         }
@@ -66,23 +52,57 @@ app.post("/campgrounds", function (req, res) {
 
 });
 
-// CREATE: Get form to add new campground
-app.get("/campgrounds/create", function (req, res) {
-    res.render("create");
+// NEW: Get form to add new campground
+app.get("/campgrounds/new", function (req, res) {
+    res.render("campgrounds/new");
 });
 
 // SHOW: Get campground by id
 app.get("/campgrounds/:id", function (req, res) {
     const id = req.params.id;
-    Campground.findById(id, function (err, campground) {
+    Campground.findById(id).populate("comments").exec(function (err, campground) {
         if (err) {
             console.log('ERROR: ', err);
         } else {
-            res.render("show", {
+            res.render("campgrounds/show", {
                 campground
             });
         }
     })
+});
+
+/*
+COMMENT ROUTES
+*/
+
+// CREATE: Get form to add new comment
+app.get("/campgrounds/:id/comments/new", function (req, res) {
+    Campground.findById(req.params.id, function (err, campground) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render("comments/new", { campground });
+        }
+    });
+});
+
+app.post("/campgrounds/:id/comments", function (req, res) {
+    Campground.findById(req.params.id, function (err, campground) {
+        if (err) {
+            console.log(err);
+            res.redirect("/campgrounds");
+        } else {
+            Comment.create(req.body.comment, function (err, comment) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    campground.comments.push(comment);
+                    campground.save();
+                    res.redirect("/campgrounds/" + req.params.id);
+                }
+            });
+        }
+    });
 });
 
 app.listen(port, function () {

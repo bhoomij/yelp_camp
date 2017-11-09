@@ -1,0 +1,57 @@
+<% include ../partials/header %>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="list-group">
+                    <div class="list-group-item">Item 1</div>
+                    <div class="list-group-item">Item 2</div>
+                    <div class="list-group-item">Item 3</div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="thumbnail">
+                    <img class="img-responsive" alt="Campground Image" src="<%= campground.image %>">
+                    <div class="caption-full">
+                        <h4>
+                            <a href="">
+                                <%= campground.name %>
+                            </a>
+                            <span class="pull-right">$9.00/day</span>
+                        </h4>
+                        <p>
+                            <%= campground.description %>
+                        </p>
+                    </div>
+                </div>
+                <div class="well">
+                    <div class="text-right">
+                        <a href="/campgrounds/<%= campground.id %>/comments/new" class="btn btn-success btn-md">Add Comment</a>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <% campground.comments.forEach(function(comment) { %>
+                                <div>
+                                    <strong><%= comment.author %></strong>
+                                    <span class="pull-right">10 days ago</span>
+                                </div>
+                                <p>
+                                    <%= comment.text %>
+                                </p>
+                                <% }) %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+    <a href="/campgrounds">Back To Campgrounds</a>
+
+    <% include ../partials/footer %>
