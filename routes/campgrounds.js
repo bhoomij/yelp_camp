@@ -1,20 +1,24 @@
 const express = require("express"),
     router = express.Router(),
-    Campground = require("../models/campground");
+    Campground = require("../models/campground"),
+    messages = require("../utility/utils"),
+    { isLoggedIn, checkCampgroundAuthorization } = require("../middleware");
 
 
 // INDEX: get all campgrounds
 router.get("/", function (req, res) {
-    Campground.find(function (err, campgrounds) {
-        if (err) {
-            console.log(err)
+    Campground.find({}, function (err, campgrounds) {
+        if (err || !campgrounds) {
+            console.log(err);
+            const error = !campgrounds ? "Campgrouds not found" : messages.somethingwentwrong;
+            req.flash("error", error);
+            res.redirect("back");
         } else {
             res.render('campgrounds', {
                 campgrounds
             });
         }
     });
-
 });
 
 // NEW: Get form to add new campground
@@ -31,10 +35,12 @@ router.post("/", isLoggedIn, function (req, res) {
     };
     Campground.create(newCampground, function (err) {
         if (err) {
-            console.log("ERROR: ", err);
+            console.log(err);
+            req.flash("error", messages.somethingwentwrong);
         } else {
-            res.redirect("/campgrounds");
+            req.flash("success", "Campground - " + newCampground.name + " added successfully");
         }
+        res.redirect("/campgrounds");
     });
 
 });
@@ -43,8 +49,11 @@ router.post("/", isLoggedIn, function (req, res) {
 router.get("/:id", function (req, res) {
     const id = req.params.id;
     Campground.findById(id).populate("comments").exec(function (err, campground) {
-        if (err) {
-            console.log('ERROR: ', err);
+        if (err || !campground) {
+            console.log(err);
+            const error = !campground ? "Campgroud not found" : messages.somethingwentwrong;
+            req.flash("error", error);
+            res.redirect("/campgrounds");
         } else {
             res.render("campgrounds/show", {
                 campground
@@ -54,11 +63,13 @@ router.get("/:id", function (req, res) {
 });
 
 // EDIT: get route for campground edit
-router.get("/:id/edit", isAuthorizedUser, function (req, res) {
+router.get("/:id/edit", checkCampgroundAuthorization, function (req, res) {
     Campground.findById(req.params.id, function (err, campground) {
-        if (err) {
+        if (err || !campground) {
             console.log(err);
-            res.redirect("/campgrounds" + req.params.id);
+            const error = !campground ? "Campgroud not found" : messages.somethingwentwrong;
+            req.flash("error", error);
+            res.redirect("back");
         } else {
             res.render("campgrounds/edit", { campground });
         }
@@ -66,50 +77,32 @@ router.get("/:id/edit", isAuthorizedUser, function (req, res) {
 });
 
 // UPDATE: put route for campground edit
-router.put("/:id", isAuthorizedUser, function (req, res) {
-    Campground.findByIdAndUpdate(req.params.id, req.body.campgroud, function (err, campground) {
-        if (err) {
+router.put("/:id", checkCampgroundAuthorization, function (req, res) {
+    Campground.findByIdAndUpdate(req.params.id, req.body.campgroud, { new: true }, function (err, campground) {
+        if (err || !campground) {
             console.log(err);
+            const error = !campground ? "Campgroud not found" : messages.somethingwentwrong;
+            req.flash("error", error);
+            res.redirect("back");
+        } else {
+            req.flash("success", "Campground - " + campground.name + " updated successfully");
         }
         res.redirect("/campgrounds/" + req.params.id);
     });
 });
 
 // DELETE: route for campground remove
-router.delete("/:id", isAuthorizedUser, function (req, res) {
-    Campground.findByIdAndRemove(req.params.id, function (err) {
-        if (err) {
+router.delete("/:id", checkCampgroundAuthorization, function (req, res) {
+    Campground.findByIdAndRemove(req.params.id, function (err, campground) {
+        if (err || !campground) {
             console.log(err);
+            const error = !campground ? "Campgroud not found" : messages.somethingwentwrong;
+            req.flash("error", error);
+        } else {
+            req.flash("success", "Campground - " + campground.name + " deleted successfully");
         }
-        res.redirect("/campgrounds");
+        res.redirect("back");
     });
 });
-
-// middleware
-function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect("/login");
-}
-
-function isAuthorizedUser(req, res, next) {
-    if (req.isAuthenticated()) {
-        Campground.findById(req.params.id, function (err, campground) {
-            if (err) {
-                console.log(err);
-                res.redirect("back");
-            } else {
-                if (campground.author.id.equals(req.user.id)) {
-                    next();
-                } else {
-                    res.redirect("back");
-                }
-            }
-        });
-    } else {
-        res.redirect("back");
-    }
-}
 
 module.exports = router;

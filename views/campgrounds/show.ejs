@@ -29,7 +29,7 @@
                         </p>
                         <% if(loggedInUser && campground.author.id.equals(loggedInUser.id)) { %>
                             <a class="btn btn-warning" href="/campgrounds/<%= campground.id %>/edit">Edit</a>
-                            <form id="delete-camp-form" action="/campgrounds/<%= campground.id %>?_method=DELETE" method="POST">
+                            <form class="delete-form" action="/campgrounds/<%= campground.id %>?_method=DELETE" method="POST">
                                 <button class="btn btn-danger">Delete</button>
                             </form>
                             <% } %>
@@ -52,7 +52,15 @@
                                 <p>
                                     <%= comment.text %>
                                 </p>
-                                <% }) %>
+                                <% if(loggedInUser && comment.author.id.equals(loggedInUser.id)) { %>
+                                    <div>
+                                        <a href="/campgrounds/<%= campground.id %>/comments/<%= comment.id %>/edit" class="btn btn-warning btn-xs">Edit</a>
+                                        <form action="/campgrounds/<%= campground.id %>/comments/<%= comment.id %>?_method=DELETE" method="POST" class="delete-form">
+                                            <button class="btn btn-danger btn-xs ">Delete</button>
+                                        </form>
+                                    </div>
+                                    <% } %>
+                                        <% }) %>
                         </div>
                     </div>
                 </div>

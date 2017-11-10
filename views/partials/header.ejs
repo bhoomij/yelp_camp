@@ -10,7 +10,6 @@
 </head>
 
 <body>
-
     <nav class="navbar navbar-default navbar-top">
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
@@ -48,3 +47,15 @@
             </div>
         </div>
     </nav>
+    <div class="container">
+        <% if(error && error.length > 0) { %>
+            <div class="alert alert-danger">
+                <%= error %>
+            </div>
+            <% } %>
+                <% if(success && success.length > 0) { %>
+                    <div class="alert alert-success">
+                        <%= success %>
+                    </div>
+                    <% } %>
+    </div>

@@ -3,6 +3,7 @@ const express = require('express'),
     bodyParser = require('body-parser'),
     mongoose = require('mongoose'),
     passport = require("passport"),
+    flash = require("connect-flash"),
     methodOverride = require("method-override"),
     LocalStrategy = require("passport-local"),
     seedDB = require("./seeder/seed"),
@@ -27,7 +28,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(express.static(__dirname + "/public"));
 app.use(methodOverride("_method"));
-
+app.use(flash());
 // init passport
 app.use(require("express-session")({
     secret: "asfgfdopkdfop mdfodsopvd dfsokvspv  sdvp[kxdfscaz",
@@ -42,6 +43,8 @@ passport.deserializeUser(User.deserializeUser());
 
 app.use(function (req, res, next) {
     res.locals.loggedInUser = req.user;
+    res.locals.error = req.flash("error");
+    res.locals.success = req.flash("success");
     next();
 });
 

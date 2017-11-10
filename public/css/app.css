@@ -20,6 +20,6 @@ body {
 
 }
 
-#delete-camp-form {
+.delete-form {
     display: inline;
 }
