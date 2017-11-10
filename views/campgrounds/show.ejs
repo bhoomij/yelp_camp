@@ -17,7 +17,7 @@
                             <a href="">
                                 <%= campground.name %>
                             </a>
-                            <span class="pull-right">$9.00/day</span>
+                            <span class="pull-right">$<%= campground.price.toFixed(2) %>/day</span>
                         </h4>
                         <p>
                             <%= campground.description %>
