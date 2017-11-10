@@ -17,22 +17,22 @@ middleware.checkCampgroundAuthorization = function (req, res, next) {
         Campground.findById(req.params.id, function (err, campground) {
             if (err || !campground) {
                 console.log(err);
-                const error = !campground ? "Campgroud not found" : messages.somethingwentwrong;
+                const error = !campground ? messages.campgroundNotFound : messages.somethingwentwrong;
                 req.flash("error", error);
-                res.redirect("back");
+                res.redirect("/campgrounds");
             } else {
 
                 if (campground.author.id.equals(req.user.id)) {
                     next();
                 } else {
                     req.flash("error", "You don't have permission to do that");
-                    res.redirect("back");
+                    res.redirect("/campgrounds");
                 }
             }
         });
     } else {
         req.flash("error", "You need to be logged in to do that");
-        res.redirect("back");
+        res.redirect("/campgrounds");
     }
 };
 
@@ -41,22 +41,22 @@ middleware.checkCommentAuthorization = function (req, res, next) {
         Comment.findById(req.params.commentId, function (err, comment) {
             if (err || !comment) {
                 console.log(err);
-                const error = !comment ? "Comment not found" : messages.somethingwentwrong;
+                const error = !comment ? messages.commentNotFound : messages.somethingwentwrong;
                 req.flash("error", error);
-                res.redirect("back");
+                res.redirect("/campgrounds");
             } else {
 
                 if (comment.author.id.equals(req.user.id)) {
                     next();
                 } else {
                     req.flash("error", "You don't have permission to do that");
-                    res.redirect("back");
+                    res.redirect("/campgrounds");
                 }
             }
         });
     } else {
         req.flash("error", "You need to be logged in to do that");
-        res.redirect("back");
+        res.redirect("/campgrounds");
     }
 };
 

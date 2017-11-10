@@ -10,9 +10,9 @@ router.get("/new", isLoggedIn, function (req, res) {
     Campground.findById(req.params.id, function (err, campground) {
         if (err || !campground) {
             console.log(err);
-            const error = !campground ? "Campgroud not found" : messages.somethingwentwrong;
+            const error = !campground ? messages.campgroundNotFound : messages.somethingwentwrong;
             req.flash("error", error);
-            res.redirect("back");
+            res.redirect("/campgrounds");
         } else {
             res.render("comments/new", { campground });
         }
@@ -24,7 +24,7 @@ router.post("/", isLoggedIn, function (req, res) {
     Campground.findById(req.params.id, function (err, campground) {
         if (err || !campground) {
             console.log(err);
-            const error = !campground ? "Campgroud not found" : messages.somethingwentwrong;
+            const error = !campground ? messages.campgroundNotFound : messages.somethingwentwrong;
             req.flash("error", error);
             res.redirect("back");
         } else {
@@ -32,6 +32,7 @@ router.post("/", isLoggedIn, function (req, res) {
                 if (err) {
                     console.log(err);
                     req.flash("error", err);
+                    res.redirect("back");
                 } else {
                     comment.author.id = req.user.id;
                     comment.author.username = req.user.username;
@@ -39,9 +40,8 @@ router.post("/", isLoggedIn, function (req, res) {
                     campground.comments.push(comment);
                     campground.save();
                     req.flash("success", "Comment added successfully");
-                    // res.redirect("/campgrounds/" + req.params.id);
+                    res.redirect("/campgrounds/" + req.params.id);
                 }
-                res.redirect("back");
             });
         }
     });
@@ -52,7 +52,7 @@ router.get("/:commentId/edit", checkCommentAuthorization, function (req, res) {
     Comment.findById(req.params.commentId, function (err, comment) {
         if (err || !comment) {
             console.log(err);
-            const error = !comment ? "Comment not found" : messages.somethingwentwrong;
+            const error = !comment ? messages.commentNotFound : messages.somethingwentwrong;
             req.flash("error", error);
             res.redirect("back");
         } else {
@@ -66,22 +66,23 @@ router.put("/:commentId", checkCommentAuthorization, function (req, res) {
     Comment.findByIdAndUpdate(req.params.commentId, req.body.comment, function (err, comment) {
         if (err || !comment) {
             console.log(err);
-            const error = !comment ? "Comment not found" : messages.somethingwentwrong;
+            const error = !comment ? messages.commentNotFound : messages.somethingwentwrong;
             req.flash("error", error);
+            res.redirect("back");
         } else {
             req.flash("success", "Comment updated successfully");
-            // res.redirect("/campgrounds/" + req.params.id);
+            res.redirect("/campgrounds/" + req.params.id);
         }
-        res.redirect("back");
+
     });
 });
 
-// UPDATE: route for comment update
+// DELETE: route for comment delete
 router.delete("/:commentId", checkCommentAuthorization, function (req, res) {
     Comment.findByIdAndRemove(req.params.commentId, function (err, comment) {
         if (err || !comment) {
             console.log(err);
-            const error = !comment ? "Comment not found" : messages.somethingwentwrong;
+            const error = !comment ? messages.commentNotFound : messages.somethingwentwrong;
             req.flash("error", error);
         } else {
             req.flash("success", "Comment deleted successfully");

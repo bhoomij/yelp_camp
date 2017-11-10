@@ -10,7 +10,7 @@ router.get("/", function (req, res) {
     Campground.find({}, function (err, campgrounds) {
         if (err || !campgrounds) {
             console.log(err);
-            const error = !campgrounds ? "Campgrouds not found" : messages.somethingwentwrong;
+            const error = !campgrounds ? messages.campgroundNotFound : messages.somethingwentwrong;
             req.flash("error", error);
             res.redirect("back");
         } else {
@@ -51,7 +51,7 @@ router.get("/:id", function (req, res) {
     Campground.findById(id).populate("comments").exec(function (err, campground) {
         if (err || !campground) {
             console.log(err);
-            const error = !campground ? "Campgroud not found" : messages.somethingwentwrong;
+            const error = !campground ? messages.campgroundNotFound : messages.somethingwentwrong;
             req.flash("error", error);
             res.redirect("/campgrounds");
         } else {
@@ -67,7 +67,7 @@ router.get("/:id/edit", checkCampgroundAuthorization, function (req, res) {
     Campground.findById(req.params.id, function (err, campground) {
         if (err || !campground) {
             console.log(err);
-            const error = !campground ? "Campgroud not found" : messages.somethingwentwrong;
+            const error = !campground ? messages.campgroundNotFound : messages.somethingwentwrong;
             req.flash("error", error);
             res.redirect("back");
         } else {
@@ -81,7 +81,7 @@ router.put("/:id", checkCampgroundAuthorization, function (req, res) {
     Campground.findByIdAndUpdate(req.params.id, req.body.campgroud, { new: true }, function (err, campground) {
         if (err || !campground) {
             console.log(err);
-            const error = !campground ? "Campgroud not found" : messages.somethingwentwrong;
+            const error = !campground ? messages.campgroundNotFound : messages.somethingwentwrong;
             req.flash("error", error);
             res.redirect("back");
         } else {
@@ -96,12 +96,12 @@ router.delete("/:id", checkCampgroundAuthorization, function (req, res) {
     Campground.findByIdAndRemove(req.params.id, function (err, campground) {
         if (err || !campground) {
             console.log(err);
-            const error = !campground ? "Campgroud not found" : messages.somethingwentwrong;
+            const error = !campground ? messages.campgroundNotFound : messages.somethingwentwrong;
             req.flash("error", error);
         } else {
             req.flash("success", "Campground - " + campground.name + " deleted successfully");
         }
-        res.redirect("back");
+        res.redirect("/campgrounds");
     });
 });
 
