@@ -14,13 +14,13 @@ const authRoutes = require("./routes/auth"),
     commentRoutes = require("./routes/comments");
 
 // seedDB();
+const url = process.env.DB_URL || "mongodb://localhost/yelp_camp";
+const port = process.env.PORT | 5000;
 
 mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://localhost/yelp_camp", {
+mongoose.connect(url, {
     useMongoClient: true
 });
-
-const port = process.env.PORT | 5000;
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({
