@@ -13,7 +13,6 @@ const authRoutes = require("./routes/auth"),
     campgroundRoutes = require("./routes/campgrounds"),
     commentRoutes = require("./routes/comments");
 
-// Kepp seedDB commented on production branch
 // seedDB();
 const url = process.env.DB_URL || "mongodb://localhost/yelp_camp";
 const port = process.env.PORT | 5000;
