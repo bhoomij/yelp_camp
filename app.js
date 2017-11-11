@@ -15,7 +15,7 @@ const authRoutes = require("./routes/auth"),
 
 // seedDB();
 const url = process.env.DB_URL || "mongodb://localhost/yelp_camp";
-const port = process.env.PORT | 5000;
+const port = process.env.PORT || 5000;
 
 mongoose.Promise = global.Promise;
 mongoose.connect(url, {
